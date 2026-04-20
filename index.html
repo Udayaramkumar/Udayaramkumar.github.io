@@ -280,15 +280,21 @@ section{padding:120px 6%}
   box-shadow:0 0 10px var(--accent3);animation:pls 2s infinite}
 @keyframes pls{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(.65);opacity:.4}}
 
-/* Hero name — typewriter */
+/* Hero name — blur morph */
 .hero-name{font-size:min(8vw,8.5rem);font-weight:960;
   letter-spacing:-.065em;line-height:.92;margin-bottom:1rem;
   color:var(--t1);white-space:nowrap;
   opacity:0;animation:fUp .9s .35s both}
-.tw-cursor{display:inline-block;width:3px;background:var(--accent);
-  margin-left:4px;border-radius:2px;vertical-align:baseline;
-  animation:cursorBlink .75s step-end infinite}
-@keyframes cursorBlink{0%,100%{opacity:1}50%{opacity:0}}
+#heroTxt{
+  display:inline-block;
+  transition:opacity .45s ease,filter .45s ease,transform .45s ease;
+}
+#heroTxt.morph-out{
+  opacity:0;filter:blur(14px);transform:translateY(-10px) scale(1.03)
+}
+#heroTxt.morph-in{
+  opacity:0;filter:blur(14px);transform:translateY(12px) scale(.97)
+}
 
 .hero-role{font-size:clamp(1rem,2vw,1.3rem);font-weight:400;
   color:var(--t2);letter-spacing:-.01em;margin-bottom:1rem;
@@ -593,7 +599,7 @@ footer{padding:24px 6%;border-top:1px solid var(--border);
       <span class="bdot"></span>
       Open to senior engineering roles
     </div>
-    <h1 class="hero-name"><span id="heroTxt">Udaya Ram Kumar</span><span class="tw-cursor"></span></h1>
+    <h1 class="hero-name"><span id="heroTxt">Udaya Ram Kumar</span></h1>
     <p class="hero-role">
       <strong>Lead Software Engineer</strong> &thinsp;·&thinsp; Amazon &thinsp;·&thinsp; KLA &thinsp;·&thinsp; Freshworks
     </p>
@@ -989,56 +995,42 @@ if(!('ontouchstart' in window)){
   })();
 }
 
-/* ═══════ TYPEWRITER NAME EFFECT ═══════ */
+/* ═══════ BLUR MORPH NAME EFFECT ═══════ */
 (function(){
   const el = document.getElementById('heroTxt');
   if(!el) return;
-
-  const seqs = ['Udaya Ram Kumar', 'Udaya RK'];
-  const DEL_SPEED = 55;   // ms per character deleted
-  const TYPE_SPEED = 80;  // ms per character typed
-  const PAUSE = 2600;     // ms to hold the completed word
-
-  let si = 0;
-
-  function findCommon(a, b){
-    let i = 0;
-    while(i < a.length && i < b.length && a[i] === b[i]) i++;
-    return i;
-  }
+  const names = ['Udaya Ram Kumar', 'Udaya RK'];
+  let idx = 0;
 
   function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
 
-  async function run(){
-    await sleep(2200); // let page settle first
+  async function morph(){
+    await sleep(2800);
     while(true){
-      const current = seqs[si];
-      const next = seqs[(si + 1) % seqs.length];
-      const pivot = findCommon(current, next);
+      // Blur out upward
+      el.classList.add('morph-out');
+      await sleep(450);
 
-      // Delete back to common prefix, one char at a time
-      let txt = current;
-      while(txt.length > pivot){
-        txt = txt.slice(0, -1);
-        el.textContent = txt;
-        await sleep(DEL_SPEED);
-      }
+      // Swap text while invisible
+      idx = (idx + 1) % names.length;
+      el.textContent = names[idx];
 
-      await sleep(150); // tiny pause at pivot before typing
+      // Reset to blur-in position (below, no transition)
+      el.style.transition = 'none';
+      el.classList.remove('morph-out');
+      el.classList.add('morph-in');
 
-      // Type the rest of next sequence
-      while(txt.length < next.length){
-        txt += next[txt.length];
-        el.textContent = txt;
-        await sleep(TYPE_SPEED);
-      }
+      // Force reflow so the next transition fires cleanly
+      void el.offsetWidth;
 
-      si = (si + 1) % seqs.length;
-      await sleep(PAUSE); // hold the completed text
+      // Blur in upward to resting position
+      el.style.transition = '';
+      el.classList.remove('morph-in');
+
+      await sleep(3200);
     }
   }
-
-  run();
+  morph();
 })();
 
 /* ═══════ CONTACT FORM — Formspree ═══════ */
