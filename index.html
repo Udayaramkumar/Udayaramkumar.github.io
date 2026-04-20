@@ -5,6 +5,18 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Udaya Ram Kumar — Lead Software Engineer</title>
 <meta name="description" content="Lead Software Engineer with 6+ years at Amazon, KLA, and Freshworks."/>
+<!-- Favicon -->
+<link rel="icon" type="image/svg+xml" href="favicon.svg"/>
+
+<!-- Google Analytics — replace G-XXXXXXXXXX with your Measurement ID -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>
+  window.dataLayer=window.dataLayer||[];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js',new Date());
+  gtag('config','G-XXXXXXXXXX');
+</script>
+
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&display=swap" rel="stylesheet"/>
@@ -191,6 +203,11 @@ img{max-width:100%;display:block}
   font-size:.65rem;line-height:1;
   transition:transform .35s var(--spring),background .3s;pointer-events:none}
 [data-theme="light"] .tog-thumb{transform:translateX(24px) translateY(-50%);background:var(--accent)}
+.resume-btn{font-size:.74rem;font-weight:750;padding:6px 14px;border-radius:100px;
+  background:rgba(107,33,255,.15);border:1px solid rgba(107,33,255,.3);
+  color:var(--accent);transition:all .2s;white-space:nowrap}
+.resume-btn:hover{background:rgba(107,33,255,.28);border-color:rgba(107,33,255,.55);
+  transform:translateY(-1px)}
 .ham{display:none;flex-direction:column;gap:4px;padding:4px}
 .ham span{display:block;width:18px;height:1.5px;background:var(--t1);border-radius:2px}
 
@@ -527,6 +544,7 @@ footer{padding:24px 6%;border-top:1px solid var(--border);
     <a href="#projects">Projects</a>
     <a href="#contact">Contact</a>
   </div>
+  <a href="resume.pdf" download="Udaya_Ram_Kumar_Resume.pdf" class="resume-btn">Resume ↓</a>
   <div class="nav-sep"></div>
   <button class="tog" id="themeToggle" aria-label="Toggle theme">
     <div class="tog-thumb" id="togThumb">🌙</div>
@@ -942,18 +960,35 @@ if(!('ontouchstart' in window)){
   })();
 }
 
-/* ═══════ CONTACT FORM ═══════ */
-document.getElementById('cform').addEventListener('submit',function(e){
+/* ═══════ CONTACT FORM — Formspree ═══════ */
+/* Replace YOUR_FORM_ID below after signing up at formspree.io */
+document.getElementById('cform').addEventListener('submit',async function(e){
   e.preventDefault();
-  const n=document.getElementById('fname').value.trim();
-  const em=document.getElementById('femail').value.trim();
-  const s=document.getElementById('fsub').value.trim();
-  const m=document.getElementById('fmsg').value.trim();
-  if(!n||!em||!m){alert('Please fill in name, email, and message.');return;}
-  window.open('mailto:goku.udaya.r12@gmail.com?subject='+encodeURIComponent(s||'Portfolio — '+n)+'&body='+encodeURIComponent('Name: '+n+'\nEmail: '+em+'\n\n'+m),'_blank');
-  this.style.display='none';
-  document.getElementById('fsuccess').style.display='block';
-  setTimeout(()=>{document.getElementById('fsuccess').style.display='none';this.style.display='flex';this.reset();},5000);
+  const btn=this.querySelector('.btn-sub');
+  const orig=btn.innerHTML;
+  btn.innerHTML='Sending…';btn.disabled=true;
+  try{
+    const res=await fetch('https://formspree.io/f/YOUR_FORM_ID',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Accept':'application/json'},
+      body:JSON.stringify({
+        name:document.getElementById('fname').value,
+        email:document.getElementById('femail').value,
+        subject:document.getElementById('fsub').value,
+        message:document.getElementById('fmsg').value
+      })
+    });
+    if(res.ok){
+      this.style.display='none';
+      document.getElementById('fsuccess').style.display='block';
+      setTimeout(()=>{document.getElementById('fsuccess').style.display='none';this.style.display='flex';this.reset();btn.innerHTML=orig;btn.disabled=false;},5000);
+    } else {
+      throw new Error('Server error');
+    }
+  } catch(err){
+    btn.innerHTML=orig;btn.disabled=false;
+    alert('Something went wrong. Please email me directly at goku.udaya.r12@gmail.com');
+  }
 });
 </script>
 </body>
