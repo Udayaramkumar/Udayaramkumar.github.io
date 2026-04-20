@@ -281,9 +281,9 @@ section{padding:120px 6%}
 @keyframes pls{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(.65);opacity:.4}}
 
 /* Hero name — typewriter */
-.hero-name{font-size:clamp(3rem,9vw,9rem);font-weight:960;
+.hero-name{font-size:min(8vw,8.5rem);font-weight:960;
   letter-spacing:-.065em;line-height:.92;margin-bottom:1rem;
-  color:var(--t1);min-height:1.05em;
+  color:var(--t1);white-space:nowrap;
   opacity:0;animation:fUp .9s .35s both}
 .tw-cursor{display:inline-block;width:3px;background:var(--accent);
   margin-left:4px;border-radius:2px;vertical-align:baseline;
@@ -593,7 +593,7 @@ footer{padding:24px 6%;border-top:1px solid var(--border);
       <span class="bdot"></span>
       Open to senior engineering roles
     </div>
-    <h1 class="hero-name" id="heroName">Udaya Ram Kumar<span class="tw-cursor"></span></h1>
+    <h1 class="hero-name"><span id="heroTxt">Udaya Ram Kumar</span><span class="tw-cursor"></span></h1>
     <p class="hero-role">
       <strong>Lead Software Engineer</strong> &thinsp;·&thinsp; Amazon &thinsp;·&thinsp; KLA &thinsp;·&thinsp; Freshworks
     </p>
@@ -991,12 +991,15 @@ if(!('ontouchstart' in window)){
 
 /* ═══════ TYPEWRITER NAME EFFECT ═══════ */
 (function(){
-  const el = document.getElementById('heroName');
+  const el = document.getElementById('heroTxt');
   if(!el) return;
-  const cursor = '<span class="tw-cursor"></span>';
-  // Sequences to morph through
-  const seqs = ['Udaya Ram Kumar', 'Udaya RK', 'Udayaramkumar'];
-  let si = 0, txt = seqs[0];
+
+  const seqs = ['Udaya Ram Kumar', 'Udaya RK'];
+  const DEL_SPEED = 55;   // ms per character deleted
+  const TYPE_SPEED = 80;  // ms per character typed
+  const PAUSE = 2600;     // ms to hold the completed word
+
+  let si = 0;
 
   function findCommon(a, b){
     let i = 0;
@@ -1004,31 +1007,37 @@ if(!('ontouchstart' in window)){
     return i;
   }
 
-  async function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
+  function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
 
   async function run(){
-    // Show initial text fully, then start morphing after delay
-    await sleep(2000);
+    await sleep(2200); // let page settle first
     while(true){
+      const current = seqs[si];
       const next = seqs[(si + 1) % seqs.length];
-      const common = findCommon(txt, next);
-      // Delete from end down to common prefix
-      while(txt.length > common){
+      const pivot = findCommon(current, next);
+
+      // Delete back to common prefix, one char at a time
+      let txt = current;
+      while(txt.length > pivot){
         txt = txt.slice(0, -1);
-        el.innerHTML = txt + cursor;
-        await sleep(48);
+        el.textContent = txt;
+        await sleep(DEL_SPEED);
       }
-      await sleep(120);
+
+      await sleep(150); // tiny pause at pivot before typing
+
       // Type the rest of next sequence
       while(txt.length < next.length){
         txt += next[txt.length];
-        el.innerHTML = txt + cursor;
-        await sleep(80);
+        el.textContent = txt;
+        await sleep(TYPE_SPEED);
       }
+
       si = (si + 1) % seqs.length;
-      await sleep(2400);
+      await sleep(PAUSE); // hold the completed text
     }
   }
+
   run();
 })();
 
