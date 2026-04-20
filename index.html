@@ -711,6 +711,7 @@ footer{padding:24px 6%;border-top:1px solid var(--border);
         </button>
       </form>
       <div id="fsuccess">✓ Message sent — I'll get back to you shortly.</div>
+      <div id="ferror" style="display:none;padding:14px;border-radius:14px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#f87171;font-size:.85rem;margin-bottom:1rem;text-align:center"></div>
       <div class="soc-row rv d2" id="socRow"></div>
     </div>
   </div>
@@ -978,17 +979,21 @@ document.getElementById('cform').addEventListener('submit',async function(e){
         message:document.getElementById('fmsg').value
       })
     });
+    const data=await res.json();
     if(res.ok){
       this.style.display='none';
       document.getElementById('fsuccess').style.display='block';
-      gtag('event','form_submit',{event_category:'contact'});
+      if(typeof gtag!=='undefined')gtag('event','form_submit',{event_category:'contact'});
       setTimeout(()=>{document.getElementById('fsuccess').style.display='none';this.style.display='flex';this.reset();btn.innerHTML=orig;btn.disabled=false;},5000);
     } else {
-      throw new Error('Server error');
+      const msg=data?.errors?.map(e=>e.message).join(', ')||data?.error||'Unknown error';
+      throw new Error(msg);
     }
   } catch(err){
     btn.innerHTML=orig;btn.disabled=false;
-    alert('Something went wrong. Please email me directly at goku.udaya.r12@gmail.com');
+    document.getElementById('ferror').textContent='Error: '+err.message+'. Please try again or email goku.udaya.r12@gmail.com directly.';
+    document.getElementById('ferror').style.display='block';
+    setTimeout(()=>document.getElementById('ferror').style.display='none',6000);
   }
 });
 </script>
