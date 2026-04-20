@@ -22,7 +22,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&family=Syne:wght@400..800&display=swap" rel="stylesheet"/>
 
 <style>
 /* ═══════════════════════════════════
@@ -281,8 +281,10 @@ section{padding:120px 6%}
 @keyframes pls{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(.65);opacity:.4}}
 
 /* Hero name — character morph */
-.hero-name{font-size:min(8vw,8.5rem);font-weight:960;
-  letter-spacing:-.065em;line-height:.92;margin-bottom:1rem;
+.hero-name{
+  font-family:'Syne',var(--f);
+  font-size:min(8.5vw,9rem);font-weight:800;
+  letter-spacing:-.04em;line-height:.95;margin-bottom:1rem;
   color:var(--t1);white-space:nowrap;
   opacity:0;animation:fUp .9s .35s both}
 #heroNameWrap{
@@ -291,11 +293,10 @@ section{padding:120px 6%}
 }
 .nc{
   display:inline-block;
-  overflow:hidden;
+  /* clip horizontally (max-width collapse) but allow glyphs to extend vertically */
+  overflow-x:clip;
+  overflow-y:visible;
   white-space:pre;
-  /* Override parent's tight line-height so overflow:hidden doesn't clip ascenders */
-  line-height:1.15;
-  vertical-align:baseline;
   will-change:max-width,opacity,transform,filter;
   transition:
     max-width .52s cubic-bezier(.4,0,.2,1),
@@ -1024,7 +1025,7 @@ if(!('ontouchstart' in window)){
 
   function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
 
-  // Build spans — called once fonts are ready so getBoundingClientRect is accurate
+  // Build spans — wait for Syne to load so getBoundingClientRect widths are accurate
   document.fonts.ready.then(() => {
     FULL.split('').forEach((ch, i) => {
       const span = document.createElement('span');
