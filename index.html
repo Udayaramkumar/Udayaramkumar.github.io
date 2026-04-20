@@ -293,12 +293,9 @@ section{padding:120px 6%}
   display:inline-block;
   overflow:hidden;
   white-space:pre;
-  /* Vertical padding so overflow:hidden doesn't clip tall/deep glyphs */
-  padding-top:.25em;
-  padding-bottom:.2em;
-  margin-top:-.25em;
-  margin-bottom:-.2em;
-  vertical-align:bottom;
+  /* Override parent's tight line-height so overflow:hidden doesn't clip ascenders */
+  line-height:1.15;
+  vertical-align:baseline;
   will-change:max-width,opacity,transform,filter;
   transition:
     max-width .52s cubic-bezier(.4,0,.2,1),
