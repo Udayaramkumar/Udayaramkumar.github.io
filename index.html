@@ -280,20 +280,31 @@ section{padding:120px 6%}
   box-shadow:0 0 10px var(--accent3);animation:pls 2s infinite}
 @keyframes pls{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(.65);opacity:.4}}
 
-/* Hero name — blur morph */
+/* Hero name — character morph */
 .hero-name{font-size:min(8vw,8.5rem);font-weight:960;
   letter-spacing:-.065em;line-height:.92;margin-bottom:1rem;
   color:var(--t1);white-space:nowrap;
   opacity:0;animation:fUp .9s .35s both}
-#heroTxt{
+#heroNameWrap{
+  display:inline-flex;
+  align-items:baseline;
+}
+.nc{
   display:inline-block;
-  transition:opacity .45s ease,filter .45s ease,transform .45s ease;
+  overflow:hidden;
+  white-space:pre;
+  will-change:max-width,opacity,transform,filter;
+  transition:
+    max-width .52s cubic-bezier(.4,0,.2,1),
+    opacity   .38s ease,
+    transform .42s cubic-bezier(.4,0,.2,1),
+    filter    .38s ease;
 }
-#heroTxt.morph-out{
-  opacity:0;filter:blur(14px);transform:translateY(-10px) scale(1.03)
-}
-#heroTxt.morph-in{
-  opacity:0;filter:blur(14px);transform:translateY(12px) scale(.97)
+.nc.nc-out{
+  opacity:0 !important;
+  transform:translateX(-6px) !important;
+  filter:blur(3px) !important;
+  max-width:0 !important;
 }
 
 .hero-role{font-size:clamp(1rem,2vw,1.3rem);font-weight:400;
@@ -599,7 +610,7 @@ footer{padding:24px 6%;border-top:1px solid var(--border);
       <span class="bdot"></span>
       Open to senior engineering roles
     </div>
-    <h1 class="hero-name"><span id="heroTxt">Udaya Ram Kumar</span></h1>
+    <h1 class="hero-name"><span id="heroNameWrap"></span></h1>
     <p class="hero-role">
       <strong>Lead Software Engineer</strong> &thinsp;·&thinsp; Amazon &thinsp;·&thinsp; KLA &thinsp;·&thinsp; Freshworks
     </p>
@@ -995,42 +1006,77 @@ if(!('ontouchstart' in window)){
   })();
 }
 
-/* ═══════ BLUR MORPH NAME EFFECT ═══════ */
+/* ═══════ CHARACTER MORPH NAME EFFECT ═══════ */
 (function(){
-  const el = document.getElementById('heroTxt');
-  if(!el) return;
-  const names = ['Udaya Ram Kumar', 'Udaya RK'];
-  let idx = 0;
+  const wrap = document.getElementById('heroNameWrap');
+  if(!wrap) return;
+
+  // "Udaya Ram Kumar" — indices of chars to collapse:
+  //   'a','m',' ' at idx 7,8,9 and 'u','m','a','r' at idx 11,12,13,14
+  const FULL = 'Udaya Ram Kumar';
+  const COLLAPSE = new Set([7, 8, 9, 11, 12, 13, 14]);
+
+  let chars = [];   // { span, naturalW }
+  let ready = false;
 
   function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
 
-  async function morph(){
-    await sleep(2800);
+  // Build spans — called once fonts are ready so getBoundingClientRect is accurate
+  document.fonts.ready.then(() => {
+    FULL.split('').forEach((ch, i) => {
+      const span = document.createElement('span');
+      span.className = 'nc';
+      // non-breaking space so display:inline-block preserves space width
+      span.textContent = ch === ' ' ? '\u00a0' : ch;
+      wrap.appendChild(span);
+
+      // Measure natural rendered width after paint
+      const w = span.getBoundingClientRect().width;
+      span.style.maxWidth = w + 'px';
+      chars.push({ span, naturalW: w });
+    });
+
+    ready = true;
+    // Begin loop after the page entrance animation settles
+    setTimeout(runLoop, 3200);
+  });
+
+  // Collapse a subset of char spans with a right-to-left stagger
+  // 'indices' should be passed highest-to-lowest (rightmost first)
+  function collapseGroup(indices, staggerMs) {
+    indices.forEach((i, step) => {
+      setTimeout(() => chars[i].span.classList.add('nc-out'), step * staggerMs);
+    });
+  }
+
+  function expandGroup(indices, staggerMs) {
+    // restore left-to-right (lowest index first)
+    const asc = [...indices].reverse();
+    asc.forEach((i, step) => {
+      setTimeout(() => chars[i].span.classList.remove('nc-out'), step * staggerMs);
+    });
+  }
+
+  async function runLoop(){
     while(true){
-      // Blur out upward
-      el.classList.add('morph-out');
-      await sleep(450);
+      // ── collapse: full → RK ──────────────────────
+      // right-to-left stagger: 'r','a','m','u' then ' ','m','a'
+      collapseGroup([14, 13, 12, 11], 22); // 'umar' — 66 ms spread
+      collapseGroup([9,  8,  7],      22); // 'am '  — 44 ms spread (start same time)
+      await sleep(750); // let transitions finish
 
-      // Swap text while invisible
-      idx = (idx + 1) % names.length;
-      el.textContent = names[idx];
-
-      // Reset to blur-in position (below, no transition)
-      el.style.transition = 'none';
-      el.classList.remove('morph-out');
-      el.classList.add('morph-in');
-
-      // Force reflow so the next transition fires cleanly
-      void el.offsetWidth;
-
-      // Blur in upward to resting position
-      el.style.transition = '';
-      el.classList.remove('morph-in');
-
+      // ── hold as "Udaya RK" ──────────────────────
       await sleep(3200);
+
+      // ── expand: RK → full ───────────────────────
+      expandGroup([14, 13, 12, 11], 22);
+      expandGroup([9,  8,  7],      22);
+      await sleep(750);
+
+      // ── hold as "Udaya Ram Kumar" ────────────────
+      await sleep(3000);
     }
   }
-  morph();
 })();
 
 /* ═══════ CONTACT FORM — Formspree ═══════ */
