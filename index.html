@@ -179,14 +179,18 @@ img{max-width:100%;display:block}
 .nav-sep{width:1px;height:14px;background:var(--border)}
 
 /* Toggle */
-.tog{width:40px;height:22px;border-radius:11px;
+.tog{width:52px;height:28px;border-radius:14px;
   background:var(--glass);border:1.5px solid var(--border);
   position:relative;cursor:pointer;flex-shrink:0;
+  display:flex;align-items:center;
   transition:background .3s,border-color .3s;padding:0}
-.tog-thumb{width:14px;height:14px;border-radius:50%;background:var(--t2);
+.tog-thumb{width:20px;height:20px;border-radius:50%;
+  background:var(--glass-deep);border:1.5px solid var(--border);
   position:absolute;left:3px;top:50%;transform:translateY(-50%);
-  transition:transform .3s var(--spring),background .3s;pointer-events:none}
-[data-theme="light"] .tog-thumb{transform:translateX(18px) translateY(-50%);background:var(--accent)}
+  display:flex;align-items:center;justify-content:center;
+  font-size:.65rem;line-height:1;
+  transition:transform .35s var(--spring),background .3s;pointer-events:none}
+[data-theme="light"] .tog-thumb{transform:translateX(24px) translateY(-50%);background:var(--accent)}
 .ham{display:none;flex-direction:column;gap:4px;padding:4px}
 .ham span{display:block;width:18px;height:1.5px;background:var(--t1);border-radius:2px}
 
@@ -276,9 +280,9 @@ section{padding:120px 6%}
 .chip{font-size:.72rem;font-weight:600;color:var(--t2);
   padding:5px 12px;border-radius:100px}
 
-.scroll-cue{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);
+.scroll-cue{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);
   display:flex;flex-direction:column;align-items:center;gap:7px;
-  opacity:0;animation:fUp .7s 1.5s both}
+  opacity:0;animation:fUp .7s 1.5s both;z-index:2}
 .scroll-cue span{font-size:.58rem;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--t3)}
 .scl{width:1px;height:48px;background:var(--border);position:relative;overflow:hidden}
 .scl::after{content:'';position:absolute;inset:0;
@@ -348,18 +352,23 @@ section{padding:120px 6%}
 ═══════════════════════════════════ */
 .experience{padding:120px 6%}
 .exp-list{display:flex;flex-direction:column;gap:8px;margin-top:3.5rem}
-.exp-item{border-radius:20px;overflow:hidden;transition:border-color .3s}
-.exp-item.open{}
+.exp-item{border-radius:20px;overflow:hidden;transition:border-color .3s;
+  background:rgba(255,255,255,.07);border:1px solid var(--border)}
+[data-theme="light"] .exp-item{background:rgba(255,255,255,.6)}
+.exp-item:hover{background:rgba(255,255,255,.11);border-color:var(--border-h)}
+.exp-item.open{background:rgba(255,255,255,.09);border-color:var(--border-h)}
 .exp-hdr{display:flex;align-items:center;justify-content:space-between;
   padding:24px 28px;cursor:pointer;gap:12px}
 .exp-lft{display:flex;align-items:center;gap:14px;min-width:0}
 .exp-ico{width:46px;height:46px;border-radius:14px;flex-shrink:0;
   display:flex;align-items:center;justify-content:center;font-size:1.25rem}
-.exp-co{font-size:1.05rem;font-weight:820;letter-spacing:-.02em;color:var(--t1)}
+.exp-co{font-size:1.05rem;font-weight:820;letter-spacing:-.02em;color:var(--t1);
+  text-shadow:0 0 20px rgba(255,255,255,.08)}
 .exp-rl{font-size:.84rem;color:var(--t2);margin-top:2px}
 .exp-rgt{display:flex;align-items:center;gap:10px;flex-shrink:0}
-.exp-pd{font-size:.73rem;font-weight:650;color:var(--t3);
-  padding:4px 11px;border-radius:100px;white-space:nowrap}
+.exp-pd{font-size:.73rem;font-weight:650;color:var(--t2);
+  padding:4px 11px;border-radius:100px;white-space:nowrap;
+  background:rgba(255,255,255,.08);border:1px solid var(--border)}
 .exp-chv{width:18px;height:18px;color:var(--t3);flex-shrink:0;
   transition:transform .35s var(--ease),color .2s}
 .exp-item.open .exp-chv{transform:rotate(180deg);color:var(--accent)}
@@ -520,7 +529,7 @@ footer{padding:24px 6%;border-top:1px solid var(--border);
   </div>
   <div class="nav-sep"></div>
   <button class="tog" id="themeToggle" aria-label="Toggle theme">
-    <div class="tog-thumb"></div>
+    <div class="tog-thumb" id="togThumb">🌙</div>
   </button>
   <button class="ham" id="ham" aria-label="Menu">
     <span></span><span></span><span></span>
@@ -748,9 +757,6 @@ const DATA = {
     {name:"Smart Ambulance",icon:"🚑",
       desc:"Ride-hailing Android app for ambulances with real-time routing, traffic signal priority, and hospital integration.",
       stack:["Android","Java","Firebase","Google Maps API"],github:"",demo:""},
-    {name:"Add Your Project",icon:"✨",
-      desc:"Edit DATA.projects in this file to showcase your latest work. Add github and demo URLs as needed.",
-      stack:["Your","Stack","Here"],github:"",demo:""}
   ],
   socials:[
     {name:"LinkedIn",href:"https://www.linkedin.com/in/udayaramkumar/",
@@ -860,9 +866,15 @@ btt.addEventListener('click',()=>scrollTo({top:0,behavior:'smooth'}));
 
 /* ═══════ THEME ═══════ */
 const root=document.documentElement;
-if(window.matchMedia('(prefers-color-scheme:light)').matches)root.dataset.theme='light';
+const togThumb=document.getElementById('togThumb');
+function applyTheme(t){
+  root.dataset.theme=t;
+  togThumb.textContent=t==='dark'?'🌙':'☀️';
+}
+if(window.matchMedia('(prefers-color-scheme:light)').matches)applyTheme('light');
+else applyTheme('dark');
 document.getElementById('themeToggle').addEventListener('click',()=>{
-  root.dataset.theme=root.dataset.theme==='dark'?'light':'dark';
+  applyTheme(root.dataset.theme==='dark'?'light':'dark');
 });
 
 /* ═══════ HAMBURGER ═══════ */
