@@ -8,6 +8,9 @@
 <!-- Favicon -->
 <link rel="icon" type="image/svg+xml" href="favicon.svg"/>
 
+<!-- reCAPTCHA v3 for spam protection -->
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
 <!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-CZXD1EQW4E"></script>
 <script>
@@ -705,6 +708,7 @@ footer{padding:24px 6%;border-top:1px solid var(--border);
         </div>
         <div class="fld"><label>Subject</label><input type="text" id="fsub" placeholder="What's this about?"/></div>
         <div class="fld"><label>Message</label><textarea id="fmsg" placeholder="Tell me about the opportunity or project..." required></textarea></div>
+        <input type="text" name="_gotcha" style="display:none" tabindex="-1" autocomplete="off"/>
         <button type="submit" class="btn-sub">
           Send message
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
