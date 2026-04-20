@@ -8,13 +8,13 @@
 <!-- Favicon -->
 <link rel="icon" type="image/svg+xml" href="favicon.svg"/>
 
-<!-- Google Analytics — replace G-XXXXXXXXXX with your Measurement ID -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-CZXD1EQW4E"></script>
 <script>
   window.dataLayer=window.dataLayer||[];
   function gtag(){dataLayer.push(arguments);}
   gtag('js',new Date());
-  gtag('config','G-XXXXXXXXXX');
+  gtag('config','G-CZXD1EQW4E');
 </script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
@@ -968,19 +968,20 @@ document.getElementById('cform').addEventListener('submit',async function(e){
   const orig=btn.innerHTML;
   btn.innerHTML='Sending…';btn.disabled=true;
   try{
-    const res=await fetch('https://formspree.io/f/YOUR_FORM_ID',{
+    const res=await fetch('https://formspree.io/f/mrerazlr',{
       method:'POST',
       headers:{'Content-Type':'application/json','Accept':'application/json'},
       body:JSON.stringify({
         name:document.getElementById('fname').value,
-        email:document.getElementById('femail').value,
-        subject:document.getElementById('fsub').value,
+        _replyto:document.getElementById('femail').value,
+        subject:document.getElementById('fsub').value||'Portfolio enquiry',
         message:document.getElementById('fmsg').value
       })
     });
     if(res.ok){
       this.style.display='none';
       document.getElementById('fsuccess').style.display='block';
+      gtag('event','form_submit',{event_category:'contact'});
       setTimeout(()=>{document.getElementById('fsuccess').style.display='none';this.style.display='flex';this.reset();btn.innerHTML=orig;btn.disabled=false;},5000);
     } else {
       throw new Error('Server error');
