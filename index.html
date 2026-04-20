@@ -22,14 +22,14 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&family=Syne:wght@400..800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&family=DM+Sans:ital,opsz,wght@0,9..40,300..1000;1,9..40,300..1000&display=swap" rel="stylesheet"/>
 
 <style>
 /* ═══════════════════════════════════
    TOKENS
 ═══════════════════════════════════ */
 :root {
-  --f:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+  --f:'DM Sans','Inter',-apple-system,BlinkMacSystemFont,sans-serif;
   --ease:cubic-bezier(.4,0,.2,1);
   --spring:cubic-bezier(.34,1.56,.64,1);
   --out:cubic-bezier(0,.55,.45,1);
@@ -282,9 +282,9 @@ section{padding:120px 6%}
 
 /* Hero name — character morph */
 .hero-name{
-  font-family:'Syne',var(--f);
-  font-size:min(8.5vw,9rem);font-weight:800;
-  letter-spacing:-.04em;line-height:.95;margin-bottom:1rem;
+  font-family:'DM Sans',var(--f);
+  font-size:clamp(3rem,7vw,7.5rem);font-weight:800;
+  letter-spacing:-.035em;line-height:.96;margin-bottom:1rem;
   color:var(--t1);white-space:nowrap;
   opacity:0;animation:fUp .9s .35s both}
 #heroNameWrap{
