@@ -256,21 +256,37 @@ section{padding:120px 6%}
 
 .hero-inner{max-width:900px;position:relative;z-index:1}
 
+/* Hero photo ring */
+.hero-photo{position:relative;margin-bottom:2rem;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;animation:fUp .8s .05s both}
+.photo-glow{position:absolute;width:200px;height:200px;border-radius:50%;
+  background:conic-gradient(from 0deg,#a78bfa,#60a5fa,#2dd4bf,#60a5fa,#a78bfa);
+  filter:blur(42px);opacity:.45;animation:spin 5s linear infinite}
+.photo-ring{width:140px;height:140px;border-radius:50%;padding:3px;
+  background:conic-gradient(from 0deg,#a78bfa,#60a5fa,#2dd4bf,#60a5fa,#a78bfa);
+  animation:spin 4s linear infinite;position:relative;z-index:1;flex-shrink:0}
+.photo-ring img{width:100%;height:100%;border-radius:50%;object-fit:cover;
+  display:block;border:3px solid var(--bg-base)}
+@keyframes spin{to{transform:rotate(360deg)}}
+
 /* Badge */
 .hero-badge{display:inline-flex;align-items:center;gap:8px;
   font-size:.7rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
   color:var(--accent);padding:7px 18px;border-radius:100px;
-  margin-bottom:2rem;opacity:0;animation:fUp .7s .15s both}
+  margin-bottom:1.5rem;opacity:0;animation:fUp .7s .2s both}
 .bdot{width:6px;height:6px;border-radius:50%;background:var(--accent3);
   box-shadow:0 0 10px var(--accent3);animation:pls 2s infinite}
 @keyframes pls{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(.65);opacity:.4}}
 
 /* Hero name */
-.hero-name{font-size:clamp(3.6rem,11vw,10.5rem);font-weight:960;
-  letter-spacing:-.068em;line-height:.86;margin-bottom:1.5rem;
-  opacity:0;animation:fUp .9s .3s both}
+.hero-name{font-size:clamp(2.8rem,9vw,8.5rem);font-weight:960;
+  letter-spacing:-.065em;line-height:.88;margin-bottom:.6rem;
+  opacity:0;animation:fUp .9s .35s both}
 .hero-name .l1{display:block;color:var(--t1)}
-.hero-name .l2{display:block}
+.hero-name .l2{display:block;font-size:clamp(1.4rem,4vw,3.8rem);
+  font-weight:500;letter-spacing:-.02em;color:var(--t2);margin-top:.35rem}
+.hero-name .l2 .gt{font-weight:700}
 
 .hero-role{font-size:clamp(1rem,2vw,1.3rem);font-weight:400;
   color:var(--t2);letter-spacing:-.01em;margin-bottom:1rem;
@@ -562,13 +578,20 @@ footer{padding:24px 6%;border-top:1px solid var(--border);
 <!-- HERO — raw on the mesh, no glass panel, maximum impact -->
 <section class="hero" id="home">
   <div class="hero-inner">
+    <!-- Profile photo with spinning gradient ring -->
+    <div class="hero-photo">
+      <div class="photo-glow"></div>
+      <div class="photo-ring">
+        <img src="profile.jpeg" alt="Udayaramkumar"/>
+      </div>
+    </div>
     <div class="hero-badge glass">
       <span class="bdot"></span>
       Open to senior engineering roles
     </div>
     <h1 class="hero-name">
-      <span class="l1">Udaya Ram</span>
-      <span class="l2 gt">Kumar.</span>
+      <span class="l1">Udayaramkumar</span>
+      <span class="l2">aka <span class="gt">Udaya RK</span></span>
     </h1>
     <p class="hero-role">
       <strong>Lead Software Engineer</strong> &thinsp;·&thinsp; Amazon &thinsp;·&thinsp; KLA &thinsp;·&thinsp; Freshworks
