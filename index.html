@@ -256,19 +256,20 @@ section{padding:120px 6%}
 
 .hero-inner{max-width:900px;position:relative;z-index:1}
 
-/* Hero photo ring */
-.hero-photo{position:relative;margin-bottom:2rem;
+/* Hero photo — floating with pulsing halo */
+.hero-photo{position:relative;margin-bottom:2.2rem;
   display:flex;align-items:center;justify-content:center;
   opacity:0;animation:fUp .8s .05s both}
-.photo-glow{position:absolute;width:200px;height:200px;border-radius:50%;
-  background:conic-gradient(from 0deg,#a78bfa,#60a5fa,#2dd4bf,#60a5fa,#a78bfa);
-  filter:blur(42px);opacity:.45;animation:spin 5s linear infinite}
-.photo-ring{width:140px;height:140px;border-radius:50%;padding:3px;
-  background:conic-gradient(from 0deg,#a78bfa,#60a5fa,#2dd4bf,#60a5fa,#a78bfa);
-  animation:spin 4s linear infinite;position:relative;z-index:1;flex-shrink:0}
-.photo-ring img{width:100%;height:100%;border-radius:50%;object-fit:cover;
+.photo-wrap{position:relative;animation:photoFloat 5s ease-in-out infinite}
+@keyframes photoFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.photo-halo{position:absolute;inset:-18px;border-radius:50%;
+  background:var(--grad);filter:blur(28px);opacity:.4;
+  animation:haloPulse 3.5s ease-in-out infinite;pointer-events:none}
+@keyframes haloPulse{0%,100%{opacity:.35;transform:scale(1)}50%{opacity:.6;transform:scale(1.1)}}
+.photo-border{width:144px;height:144px;border-radius:50%;padding:2.5px;
+  background:var(--grad);position:relative;z-index:1}
+.photo-border img{width:100%;height:100%;border-radius:50%;object-fit:cover;
   display:block;border:3px solid var(--bg-base)}
-@keyframes spin{to{transform:rotate(360deg)}}
 
 /* Badge */
 .hero-badge{display:inline-flex;align-items:center;gap:8px;
@@ -279,14 +280,15 @@ section{padding:120px 6%}
   box-shadow:0 0 10px var(--accent3);animation:pls 2s infinite}
 @keyframes pls{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(.65);opacity:.4}}
 
-/* Hero name */
-.hero-name{font-size:clamp(2.8rem,9vw,8.5rem);font-weight:960;
-  letter-spacing:-.065em;line-height:.88;margin-bottom:.6rem;
+/* Hero name — typewriter */
+.hero-name{font-size:clamp(3rem,9vw,9rem);font-weight:960;
+  letter-spacing:-.065em;line-height:.92;margin-bottom:1rem;
+  color:var(--t1);min-height:1.05em;
   opacity:0;animation:fUp .9s .35s both}
-.hero-name .l1{display:block;color:var(--t1)}
-.hero-name .l2{display:block;font-size:clamp(1.4rem,4vw,3.8rem);
-  font-weight:500;letter-spacing:-.02em;color:var(--t2);margin-top:.35rem}
-.hero-name .l2 .gt{font-weight:700}
+.tw-cursor{display:inline-block;width:3px;background:var(--accent);
+  margin-left:4px;border-radius:2px;vertical-align:baseline;
+  animation:cursorBlink .75s step-end infinite}
+@keyframes cursorBlink{0%,100%{opacity:1}50%{opacity:0}}
 
 .hero-role{font-size:clamp(1rem,2vw,1.3rem);font-weight:400;
   color:var(--t2);letter-spacing:-.01em;margin-bottom:1rem;
@@ -578,21 +580,20 @@ footer{padding:24px 6%;border-top:1px solid var(--border);
 <!-- HERO — raw on the mesh, no glass panel, maximum impact -->
 <section class="hero" id="home">
   <div class="hero-inner">
-    <!-- Profile photo with spinning gradient ring -->
+    <!-- Profile photo — floating with gradient halo -->
     <div class="hero-photo">
-      <div class="photo-glow"></div>
-      <div class="photo-ring">
-        <img src="profile.jpeg" alt="Udayaramkumar"/>
+      <div class="photo-wrap">
+        <div class="photo-halo"></div>
+        <div class="photo-border">
+          <img src="profile.jpeg" alt="Udayaramkumar"/>
+        </div>
       </div>
     </div>
     <div class="hero-badge glass">
       <span class="bdot"></span>
       Open to senior engineering roles
     </div>
-    <h1 class="hero-name">
-      <span class="l1">Udayaramkumar</span>
-      <span class="l2">aka <span class="gt">Udaya RK</span></span>
-    </h1>
+    <h1 class="hero-name" id="heroName">Udaya Ram Kumar<span class="tw-cursor"></span></h1>
     <p class="hero-role">
       <strong>Lead Software Engineer</strong> &thinsp;·&thinsp; Amazon &thinsp;·&thinsp; KLA &thinsp;·&thinsp; Freshworks
     </p>
@@ -987,6 +988,49 @@ if(!('ontouchstart' in window)){
     requestAnimationFrame(loop);
   })();
 }
+
+/* ═══════ TYPEWRITER NAME EFFECT ═══════ */
+(function(){
+  const el = document.getElementById('heroName');
+  if(!el) return;
+  const cursor = '<span class="tw-cursor"></span>';
+  // Sequences to morph through
+  const seqs = ['Udaya Ram Kumar', 'Udaya RK', 'Udayaramkumar'];
+  let si = 0, txt = seqs[0];
+
+  function findCommon(a, b){
+    let i = 0;
+    while(i < a.length && i < b.length && a[i] === b[i]) i++;
+    return i;
+  }
+
+  async function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
+
+  async function run(){
+    // Show initial text fully, then start morphing after delay
+    await sleep(2000);
+    while(true){
+      const next = seqs[(si + 1) % seqs.length];
+      const common = findCommon(txt, next);
+      // Delete from end down to common prefix
+      while(txt.length > common){
+        txt = txt.slice(0, -1);
+        el.innerHTML = txt + cursor;
+        await sleep(48);
+      }
+      await sleep(120);
+      // Type the rest of next sequence
+      while(txt.length < next.length){
+        txt += next[txt.length];
+        el.innerHTML = txt + cursor;
+        await sleep(80);
+      }
+      si = (si + 1) % seqs.length;
+      await sleep(2400);
+    }
+  }
+  run();
+})();
 
 /* ═══════ CONTACT FORM — Formspree ═══════ */
 /* Replace YOUR_FORM_ID below after signing up at formspree.io */
