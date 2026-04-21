@@ -418,12 +418,16 @@ section{padding:120px 6%}
 .exp-item.open{background:rgba(255,255,255,.09);border-color:var(--border-h)}
 .exp-hdr{display:flex;align-items:center;justify-content:space-between;
   padding:24px 28px;cursor:pointer;gap:12px}
-.exp-lft{display:flex;align-items:center;gap:14px;min-width:0}
+.exp-lft{display:flex;align-items:center;gap:14px;min-width:0;flex:1}
+.exp-txt{min-width:0;overflow:hidden}
+.exp-co{font-size:1.05rem;font-weight:820;letter-spacing:-.02em;color:var(--t1);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  text-shadow:0 0 20px rgba(255,255,255,.08)}
+.exp-pd-mob{display:none;font-size:.68rem;font-weight:600;color:var(--t2);margin-top:3px}
 .exp-ico{width:46px;height:46px;border-radius:14px;flex-shrink:0;
   display:flex;align-items:center;justify-content:center;font-size:1.25rem}
-.exp-co{font-size:1.05rem;font-weight:820;letter-spacing:-.02em;color:var(--t1);
-  text-shadow:0 0 20px rgba(255,255,255,.08)}
-.exp-rl{font-size:.84rem;color:var(--t2);margin-top:2px}
+.exp-rl{font-size:.84rem;color:var(--t2);margin-top:2px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .exp-rgt{display:flex;align-items:center;gap:10px;flex-shrink:0}
 .exp-pd{font-size:.73rem;font-weight:650;color:var(--t2);
   padding:4px 11px;border-radius:100px;white-space:nowrap;
@@ -576,22 +580,22 @@ footer{padding:24px 6%;border-top:1px solid var(--border);
 
   /* ── Experience ── */
   .experience{padding:80px 5%}
-  /* Tighter card padding on mobile */
-  .exp-hdr{padding:16px 16px;gap:8px}
+  .exp-hdr{padding:14px 14px;gap:8px}
   .exp-lft{gap:10px}
-  .exp-ico{width:38px;height:38px;border-radius:10px;font-size:1rem;flex-shrink:0}
-  .exp-co{font-size:.95rem}
-  .exp-rl{font-size:.78rem}
-  /* Hide period badge on mobile — too cramped */
+  .exp-ico{width:36px;height:36px;border-radius:10px;font-size:.95rem;flex-shrink:0}
+  .exp-co{font-size:.92rem}
+  .exp-rl{font-size:.75rem}
+  /* Hide desktop period badge — show the inline mobile one instead */
   .exp-pd{display:none}
-  /* Tighter body padding */
-  .exp-bin{padding:4px 16px 20px}
-  .ep{font-size:.84rem}
+  .exp-pd-mob{display:block}
+  .exp-bin{padding:4px 14px 18px}
+  .ep{font-size:.82rem}
 
   /* ── Projects ── */
-  /* Move nav arrows to their own row so they don't gap the heading */
-  .proj-hdr{flex-direction:column;align-items:flex-start;gap:.75rem;margin-bottom:2rem}
-  .pnav{align-self:flex-end}
+  /* Hide arrow buttons on mobile — users swipe natively */
+  .proj-hdr{flex-direction:column;align-items:flex-start;gap:.5rem;margin-bottom:1.5rem}
+  .parr{display:none}
+  .pnav{align-self:flex-start}
   .pc{flex:0 0 290px}
   .chl{letter-spacing:-.06em}
 
@@ -885,7 +889,11 @@ document.getElementById('expList').innerHTML = DATA.experience.map((e,i)=>`
     <div class="exp-hdr" onclick="toggleExp(this)">
       <div class="exp-lft">
         <div class="exp-ico" style="background:${e.iconBg}">${e.icon}</div>
-        <div><div class="exp-co">${e.company}</div><div class="exp-rl">${e.role}</div></div>
+        <div class="exp-txt">
+          <div class="exp-co">${e.company}</div>
+          <div class="exp-rl">${e.role}</div>
+          <div class="exp-pd-mob">${e.period}</div>
+        </div>
       </div>
       <div class="exp-rgt">
         <div class="exp-pd glass">${e.period}</div>
@@ -947,8 +955,9 @@ function upDots(){
   const idx=Math.round(track.scrollLeft/cw);
   dotsEl.querySelectorAll('.pdot').forEach((d,i)=>d.classList.toggle('on',i===idx));
 }
-document.getElementById('pL').onclick=()=>track.scrollBy({left:-360,behavior:'smooth'});
-document.getElementById('pR').onclick=()=>track.scrollBy({left:360,behavior:'smooth'});
+function cardW(){return (track.querySelector('.pc')?.offsetWidth||340)+20;}
+document.getElementById('pL').onclick=()=>track.scrollBy({left:-cardW(),behavior:'smooth'});
+document.getElementById('pR').onclick=()=>track.scrollBy({left:cardW(),behavior:'smooth'});
 track.addEventListener('scroll',upDots,{passive:true});
 let drag=false,dragX,dragSL;
 track.addEventListener('mousedown',e=>{drag=true;dragX=e.pageX-track.offsetLeft;dragSL=track.scrollLeft;});
